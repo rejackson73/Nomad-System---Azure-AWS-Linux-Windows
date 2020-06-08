@@ -1,0 +1,9 @@
+# volume registration
+type = "csi"
+id = "efs-tests"
+name = "efs-tests"
+external_id = "fs-d23ff6aa"
+#access_mode = "single-node-writer"
+access_mode = "multi-node-multi-writer"
+attachment_mode = "file-system"
+plugin_id = "aws-efs"

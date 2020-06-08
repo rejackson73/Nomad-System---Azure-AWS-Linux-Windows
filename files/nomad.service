@@ -1,0 +1,21 @@
+[Unit]
+Description=Nomad
+Documentation=https://nomadproject.io/docs/
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=10
+
+[Service]
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/local/bin/nomad agent -config /etc/nomad/nomad.d -data-dir /var/lib/nomad
+KillMode=process
+KillSignal=SIGINT
+LimitNOFILE=infinity
+LimitNPROC=infinity
+Restart=on-failure
+RestartSec=2
+StartLimitBurst=3
+TasksMax=infinity
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,94 @@
+{
+  "variables": {
+    "subscription_id": "{{env `ARM_SUBSCRIPTION_ID`}}",
+    "tenant_id": "{{env `ARM_TENANT_ID`}}",
+    "client_id": "{{env `ARM_CLIENT_ID`}}",
+    "client_secret": "{{env `ARM_CLIENT_SECRET`}}",
+    "resource_group_name": "",
+    "storage_account": "",
+    "terraform_version": "0.12.20",
+    "location": "",
+    "owner": ""
+  },
+  "builders": [{
+    "type": "azure-arm",
+    "managed_image_name": "{{ user `owner`}}_{{timestamp}}",
+    "managed_image_resource_group_name": "{{ user `resource_group_name` }}",
+
+    "client_id": "{{ user `client_id` }}",
+    "client_secret": "{{ user `client_secret` }}",
+    "object_id": "{{ user `object_id` }}",
+    "subscription_id": "{{ user `subscription_id` }}",
+    "tenant_id": "{{ user `tenant_id` }}",
+
+    "os_type": "Windows",
+    "image_publisher": "MicrosoftWindowsServer",
+    "image_offer": "WindowsServer",
+    "image_sku": "2019-Datacenter",
+
+    "communicator": "winrm",
+    "winrm_use_ssl": "true",
+    "winrm_insecure": "true",
+    "winrm_timeout": "30m",
+    "winrm_username": "packer",
+
+    "location": "{{ user `location` }}",
+    "vm_size": "Standard_A8_v2"
+  }],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "RDP-Tcp-443.reg",
+      "destination": "RDP-Tcp-443.reg"
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "Set-PSDebug -Trace 2",
+        "winrm set winrm/config/service/Auth '@{Basic=\"true\"}'",
+        "winrm set winrm/config/service '@{AllowUnencrypted=\"true\"}'",
+        "winrm set winrm/config/winrs '@{MaxMemoryPerShellMB=\"1024\"}'",
+        "New-Item -ItemType Directory -Path 'c:\\hashicorp\\nomad\\nomad.d', 'c:\\hashicorp\\nomad\\nomad-data', 'c:\\hashicorp\\nomad\\logs', 'c:\\hashicorp\\nomad\\storage'",
+        "New-Item -ItemType Directory -Path 'c:\\hashicorp\\consul\\consul.d', 'c:\\hashicorp\\consul\\consul-data', 'c:\\hashicorp\\consul\\logs'",
+        "Write-Host -ForegroundColor White \"Downloading Nomad\"",
+        "(New-Object System.Net.WebClient).DownloadFile('https://releases.hashicorp.com/nomad/0.11.1/nomad_0.11.1_windows_amd64.zip','nomad_0.11.1_windows_amd64.zip')",
+        "Write-Host -ForegroundColor White \"Downloading Consul\"",
+        "(New-Object System.Net.WebClient).DownloadFile('https://releases.hashicorp.com/consul/1.7.3/consul_1.7.3_windows_amd64.zip','consul_1.7.3_windows_amd64.zip')",
+        "Write-Host -ForegroundColor White \"Downloading Java\"",
+        "(New-Object System.Net.WebClient).DownloadFile('https://javadl.oracle.com/webapps/download/AutoDL?BundleId=242060_3d5a2bb8f8d4428bbe94aed7ec7ae784','jre-8u251-windows-x64.exe')",
+        "reg import 'RDP-Tcp-443.reg'",
+        "New-NetFirewallRule -DisplayName \"Allow Inbound Port 443\" -Direction Inbound -LocalPort 443 -Protocol TCP -Action Allow",
+        "Write-Host -ForegroundColor White \"Installing Java\"",
+        "Start-Process -NoNewWindow -FilePath jre-8u251-windows-x64.exe -ArgumentList 'INSTALL_SILENT=Enable'"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "../files/nomad-common.hcl",
+      "destination": "C:\\hashicorp\\nomad\\nomad.d\\nomad-common.hcl"
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "Write-Host -ForegroundColor White \"Unzipping Nomad\"",
+        "Expand-Archive -Path nomad_0.11.1_windows_amd64.zip -DestinationPath \"C:\\hashicorp\\nomad\\\"",
+        "Write-Host -ForegroundColor White \"Unzipping Consul\"",
+        "Expand-Archive -Path consul_1.7.3_windows_amd64.zip -DestinationPath \"C:\\hashicorp\\consul\\\""
+        ]
+    },
+    {
+    "type": "powershell",
+      "inline": [
+        "if( Test-Path $Env:SystemRoot\\windows\\system32\\Sysprep\\unattend.xml ){ rm $Env:SystemRoot\\windows\\system32\\Sysprep\\unattend.xml -Force}",
+        "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit",
+        "while($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10  } else { break } }"
+    ]
+  }],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "azure-manifest.json",
+      "strip_path": true
+    }
+  ]
+}
