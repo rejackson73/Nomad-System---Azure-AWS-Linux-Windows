@@ -50,7 +50,10 @@ $consulappendage = @"
     "advertise_addr": "$($client_IP)",
     "server": false,
     "bind_addr": "$($private_IP)",
-    "retry_join": ["$server_1","$server_2","$server_3"]
+    "retry_join": ["$server_1","$server_2","$server_3"],
+    "telemetry": {
+        "dogstatsd_addr": "127.0.0.1:8125"
+      }
 }
 "@
 

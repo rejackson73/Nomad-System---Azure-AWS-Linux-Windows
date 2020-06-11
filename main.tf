@@ -206,7 +206,7 @@ resource null_resource "provisioning-clients" {
   provisioner "remote-exec" {
     inline = [
       "sudo cat << EOF > /tmp/nomad-client.hcl",
-      "log_file = \"/etc/nomad/log\"",
+      "log_file = \"/etc/nomad/logs/\"",
       "advertise {",
       "http = \"${each.value.public_ip}\"",
       "rpc  = \"${each.value.public_ip}\"",

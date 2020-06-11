@@ -41,6 +41,10 @@ resource "null_resource" "azure_packer_runner" {
   provisioner "local-exec" {
     command     = "packer build -var owner=${var.owner} -var resource_group_name=${azurerm_resource_group.nomad.name} -var storage_account=${azurerm_storage_account.nomad.name} -var location=${var.azure_location} Azure_Windows_image.json"
   }
+  provisioner "local-exec" {
+    when    = destroy
+    command = "rm azure-manifest.json"
+  }
 }
 resource "null_resource" "aws_packer_runner" {
   depends_on = [
@@ -48,6 +52,10 @@ resource "null_resource" "aws_packer_runner" {
   ]
   provisioner "local-exec" {
     command     = "packer build -var owner=${var.owner} -var aws_region=${var.aws_region} -var aws_instance_type=${var.aws_instance_type} AWS_linux_image.pkr.hcl"
+  }
+  provisioner "local-exec" {
+    when    = destroy
+    command = "rm aws-manifest.json"
   }
 }
 

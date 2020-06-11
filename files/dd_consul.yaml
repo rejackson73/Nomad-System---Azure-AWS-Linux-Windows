@@ -1,0 +1,5 @@
+logs:
+  - type: file
+    path: /etc/consul/logs/*
+    source: consul
+    service: myservice

@@ -4,6 +4,7 @@
     "tenant_id": "{{env `ARM_TENANT_ID`}}",
     "client_id": "{{env `ARM_CLIENT_ID`}}",
     "client_secret": "{{env `ARM_CLIENT_SECRET`}}",
+    "datadog-key": "{{env `PKR_VAR_DD_API_KEY`}}",
     "resource_group_name": "",
     "storage_account": "",
     "terraform_version": "0.12.20",
@@ -64,6 +65,11 @@
     },
     {
       "type": "file",
+      "source": "../files/consul-common.hcl",
+      "destination": "C:\\hashicorp\\consul\\consul.d\\consul-common.hcl"
+    },
+    {
+      "type": "file",
       "source": "../files/nomad-common.hcl",
       "destination": "C:\\hashicorp\\nomad\\nomad.d\\nomad-common.hcl"
     },
@@ -77,13 +83,45 @@
         ]
     },
     {
+      "type": "powershell",
+        "environment_vars": [ "datadog_key={{user `datadog-key`}}" ],
+        "inline": [
+          "Write-Host -ForegroundColor White \"Installing DataDog\" with key $datadog_key or $datadog-key or {{user `datadog-key`}}",
+          "(New-Object System.Net.WebClient).DownloadFile('https://s3.amazonaws.com/ddagent-windows-stable/datadog-agent-7-latest.amd64.msi','datadog-agent-7-latest.amd64.msi')",
+          "Start-Process -Wait msiexec -ArgumentList '/qn /i datadog-agent-7-latest.amd64.msi APIKEY=\"{{user `datadog-key`}}\" '",
+          "New-Item -ItemType Directory -Path 'C:\\ProgramData\\Datadog\\conf.d\\nomad.d'"
+        ]
+    },
+    {
+      "type": "file",
+      "source": "../files/dd_consul.yaml",
+      "destination": "C:\\ProgramData\\Datadog\\conf.d\\consul.d\\consul.yaml"
+    },
+    {
+      "type": "file",
+      "source": "../files/dd_nomad.yaml",
+      "destination": "C:\\ProgramData\\Datadog\\conf.d\\nomad.d\\nomad.yaml"
+    },
+    {
+      "type": "file",
+      "source": "../files/dogtreat.yaml",
+      "destination": "C:\\ProgramData\\Datadog\\dogtreat.yaml"
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "cat C:\\ProgramData\\Datadog\\dogtreat.yaml | add-content C:\\ProgramData\\Datadog\\datadog.yaml"
+        ]
+    },
+    {
     "type": "powershell",
       "inline": [
         "if( Test-Path $Env:SystemRoot\\windows\\system32\\Sysprep\\unattend.xml ){ rm $Env:SystemRoot\\windows\\system32\\Sysprep\\unattend.xml -Force}",
         "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit",
         "while($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10  } else { break } }"
-    ]
-  }],
+      ]
+    }
+  ],
   "post-processors": [
     {
       "type": "manifest",
