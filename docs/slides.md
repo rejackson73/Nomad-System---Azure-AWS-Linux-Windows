@@ -9,7 +9,7 @@ count: false
 ![:scale 15%](https://hashicorp.github.io/field-workshops-assets/assets/logos/logo_nomad.png)
 
 ???
-This slide deck briefly covers the work for this repository.  The ultimate goal is to demonstrate the flexibility of Nomad as an Orchestrator across multiple environments
+This slide deck briefly covers the work for this repository.  The ultimate goal is to demonstrate the flexibility of Nomad as an Orchestrator across multiple environments.  Like every great mystery, I find it important however to go back to the motivation, the 'why' of the problem.
 
 ---
 layout: true
@@ -51,7 +51,7 @@ name:  Impetus for the Project
 ]
 
 ???
-Yup, the dumpster fire we call 2020 increased in fervency, and as we all went on lockdown, what would we do with all of that time?  What would our kids do with all of that time?  I know what I would have done...and it wasn't anything good.  So what could we do?  We know everything went online...we could do watch parties, and online games!  Hey, games, that would be a great thing for my Scouts to do together (yes, believe it or not, I'm a Scout leader).  So, I set out on a journey
+As the dumpster fire we call 2020 increased in fervency, and  we all went on lockdown, what would we do with all of that time?  What would our kids do with all of that time?  I know what I would have done...and it wasn't anything good.  So what could we do?  We know everything went online...we could do watch parties, and online games!  Hey, games, that would be a great thing for my Scouts to do together (yes, believe it or not, I'm a Scout leader).  So, I set out on a journey
 
 ---
 name:  The Seed of Minecraft

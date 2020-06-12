@@ -56,7 +56,7 @@ resource aws_subnet "nomad-demo" {
   }
 }
 resource aws_security_group "nomad-demo" {
-  name = "${var.owner}-security-group"
+  name   = "${var.owner}-security-group"
   vpc_id = aws_vpc.nomad-demo.id
   # Hopefully we all know what these are for
   ingress {
@@ -189,7 +189,7 @@ resource aws_instance "nomad-client" {
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.nomad-demo.id
   vpc_security_group_ids      = [aws_security_group.nomad-demo.id]
-  iam_instance_profile = aws_iam_instance_profile.instance_profile.name
+  iam_instance_profile        = aws_iam_instance_profile.instance_profile.name
   tags = {
     Name  = "${var.owner}-nomad-client-instance-${count.index}"
     Owner = var.owner_tag
@@ -271,8 +271,8 @@ provider "azurerm" {
 locals {
   azure_to_json    = jsondecode(file("Image-Creation/azure-manifest.json"))
   azure_pull_build = element(tolist(local.azure_to_json.builds), 0)
-  azure_rg = element((split("/", local.azure_pull_build["artifact_id"])), 4)
-  azure_image = local.azure_pull_build["artifact_id"]
+  azure_rg         = element((split("/", local.azure_pull_build["artifact_id"])), 4)
+  azure_image      = local.azure_pull_build["artifact_id"]
 }
 
 #################################################
@@ -358,7 +358,7 @@ resource null_resource "winrm_provisioner" {
       "powershell -ExecutionPolicy Unrestricted -File  c:\\hashicorp\\setupclient.ps1 ${aws_instance.nomad-server[0].public_ip} ${aws_instance.nomad-server[1].public_ip} ${aws_instance.nomad-server[2].public_ip}"
     ]
   }
-# Specifying the connection details for WinRM to the Windows machine
+  # Specifying the connection details for WinRM to the Windows machine
   connection {
     host     = azurerm_windows_virtual_machine.nomad-demo.public_ip_address
     port     = "5985"

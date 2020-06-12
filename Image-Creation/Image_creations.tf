@@ -4,7 +4,7 @@
 
 provider "azurerm" {
   features {}
-  version  = ">=2.0.0"
+  version = ">=2.0.0"
 }
 resource "azurerm_resource_group" "nomad" {
   name     = var.nomad_rg
@@ -17,8 +17,8 @@ resource "azurerm_resource_group" "nomad" {
 # Creating a random number to append to the storage account
 # And then the storage account
 resource "random_integer" "number" {
-  min     = 1
-  max     = 666
+  min = 1
+  max = 666
 }
 resource "azurerm_storage_account" "nomad" {
   name                     = "${var.azure_location}${random_integer.number.result}"
@@ -36,10 +36,10 @@ resource "azurerm_storage_account" "nomad" {
 
 resource "null_resource" "azure_packer_runner" {
   depends_on = [
-    azurerm_storage_account.nomad,azurerm_resource_group.nomad
+    azurerm_storage_account.nomad, azurerm_resource_group.nomad
   ]
   provisioner "local-exec" {
-    command     = "packer build -var owner=${var.owner} -var resource_group_name=${azurerm_resource_group.nomad.name} -var storage_account=${azurerm_storage_account.nomad.name} -var location=${var.azure_location} Azure_Windows_image.json"
+    command = "packer build -var owner=${var.owner} -var resource_group_name=${azurerm_resource_group.nomad.name} -var storage_account=${azurerm_storage_account.nomad.name} -var location=${var.azure_location} Azure_Windows_image.json"
   }
   provisioner "local-exec" {
     when    = destroy
@@ -48,10 +48,10 @@ resource "null_resource" "azure_packer_runner" {
 }
 resource "null_resource" "aws_packer_runner" {
   depends_on = [
-    azurerm_storage_account.nomad,azurerm_resource_group.nomad
+    azurerm_storage_account.nomad, azurerm_resource_group.nomad
   ]
   provisioner "local-exec" {
-    command     = "packer build -var owner=${var.owner} -var aws_region=${var.aws_region} -var aws_instance_type=${var.aws_instance_type} AWS_linux_image.pkr.hcl"
+    command = "packer build -var owner=${var.owner} -var aws_region=${var.aws_region} -var aws_instance_type=${var.aws_instance_type} AWS_linux_image.pkr.hcl"
   }
   provisioner "local-exec" {
     when    = destroy
