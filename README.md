@@ -17,6 +17,8 @@ To start, the Image-Creation folder is for, well, creating the images being used
 
 The AWS image is defined using HCL, and uses the shell to perform installation/provisioning.  The Windows image is defined using JSON and uses Powershell for installation/provisioning.  Both images create a manifest json image which is used by the main Terraform build in the 'root' directory.
 
+Part of the process also includes setting up the DataDog agents on all systems, with a DataDog KEY that is loaded as an environment variable.  The application logs for Consul and Nomad, as well as metrics, are provided to DataDog for analysis and pretty dashboards.
+
 Variables for Image-Creation are defined in the terraform.tfvars file.
 owner          = "<tag_identifying_infrastructure_owner>"
 aws_region     = "<AWS_region>"
