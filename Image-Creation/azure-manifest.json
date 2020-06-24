@@ -3,12 +3,12 @@
     {
       "name": "azure-arm",
       "builder_type": "azure-arm",
-      "build_time": 1591831547,
+      "build_time": 1592248873,
       "files": null,
-      "artifact_id": "/subscriptions/14692f20-9428-451b-8298-102ed4e39c2a/resourceGroups/rj-nomad/providers/Microsoft.Compute/images/rjackson_1591830328",
-      "packer_run_uuid": "333b435a-f028-14a0-cb93-f382d0d230b6",
+      "artifact_id": "/subscriptions/14692f20-9428-451b-8298-102ed4e39c2a/resourceGroups/rj-nomad/providers/Microsoft.Compute/images/rjackson_1592247411",
+      "packer_run_uuid": "8980e1d7-f38e-9a1f-11b2-0ce14f8ff66a",
       "custom_data": null
     }
   ],
-  "last_run_uuid": "333b435a-f028-14a0-cb93-f382d0d230b6"
+  "last_run_uuid": "8980e1d7-f38e-9a1f-11b2-0ce14f8ff66a"
 }
