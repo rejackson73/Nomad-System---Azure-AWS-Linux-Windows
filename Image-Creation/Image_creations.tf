@@ -11,6 +11,7 @@ resource "azurerm_resource_group" "nomad" {
   location = var.azure_location
   tags = {
     Owner = var.owner
+    DoNotDelete = "True"
   }
 }
 # Note that Storage Accounts must be Unique within all of Azure

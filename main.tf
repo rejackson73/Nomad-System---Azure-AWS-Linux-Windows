@@ -348,6 +348,7 @@ resource "azurerm_windows_virtual_machine" "nomad-demo" {
   }
   tags = {
     owner = var.owner
+    DoNotDelete = "True"
   }
 }
 
